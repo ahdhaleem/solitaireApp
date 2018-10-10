@@ -41,53 +41,95 @@ function reducer(state={cards: [], currentCardIndex: 0, dealtCards: []}, action)
             }
             // sets last card on dealtCards array to flipped = true
             shuffledDeck.forEach( card => card.flipped = true );
+
             return {
                 ...state, dealtCards,
                 cards: shuffledDeck
             }
-        case 'SELECT_CARD':
-            let selectedCards = [...state.dealtCards]
-            // let cardClicked = selectedCards[action.columnIndex][action.rowIndex];
-            let cardToDrag;
-            let cardToDrop;
+        case 'SELECT_DECK_CARD':
+            let deckCards = [...state.cards];
+            let selectedDeckCard;
 
-            for(let i = 0; i < selectedCards.length; i++) {
-                for(let j = 0; j < selectedCards[i].length; j++) {
-                    if(selectedCards[i][j].selected) {
-                        cardToDrag = selectedCards[i][j]
-                        cardToDrop = selectedCards[action.columnIndex][action.rowIndex]
-                        return console.log(cardToDrag, cardToDrop)
-                    } else {
-                        // cardClicked.selected = true
-                        console.log('False')
-                        selectedCards[action.columnIndex][action.rowIndex].selected = true
-                         cardToDrag = selectedCards[action.columnIndex][action.rowIndex]
-                        return console.log(cardToDrag)
+            for(let i = 0; i < deckCards.length; i++) {
+                if(deckCards[i].selected) {
+                    selectedDeckCard = deckCards[i]
+                    console.log(selectedDeckCard)
+                }
+            }
+
+            return {
+                ...state,
+                cards: deckCards
+            };
+        case 'SELECT_CARD':
+            let newDealtCards = [...state.dealtCards]
+            let selectedCard;
+            let selectedCardColumn;
+            let selectedCardRow;
+
+
+            for(let i = 0; i < newDealtCards.length; i++){
+                for(let j = 0; j < newDealtCards[i].length; j++) {
+                    if(newDealtCards[i][j].selected) {
+                        selectedCard = newDealtCards[i][j]
+                        selectedCardColumn = i;
+                        selectedCardRow = j;
                     }
                 }
             }
 
+            let newCardClicked = newDealtCards[action.columnIndex][action.rowIndex];
 
-                // if(cardClicked.selected === false) {
-                //     cardToDrag = cardClicked
-                //     console.log("first statement:")
-                //     cardToDrag.selected = true
-                //     console.log(cardToDrag)
-                // }
-                //
-                // else {
-                //     cardToDrop = cardClicked
-                //     console.log("last statement:")
-                //     console.log(cardToDrop)
-                //
-                //     // cardToDrop = selectedCards[action.columnIndex][action.rowIndex]
-                //     // console.log("last statement:")
-                //     // console.log(selectedCards[action.columnIndex][action.rowIndex])
-                // }
+            if(selectedCard) {
+                //there exist a card that is selected already
+                //add logic to see if the move can be made
+                //if it can then actually move the card out of the array its in - into the new position
+                //if it cant be moved then you can deselect the card that was selected
+
+                if(
+                    (selectedCard.rank + 1 === newCardClicked.rank ||
+                        selectedCard.rank === 'Q' && newCardClicked.rank === 'K' ||
+                        selectedCard.rank === 'J' && newCardClicked.rank === 'Q' ||
+                        selectedCard.rank === 10 && newCardClicked.rank === 'J'||
+                        selectedCard.rank === 'A' && newCardClicked.rank === 2)
+                    && (
+                        (
+                            (selectedCard.suit === '♣' || selectedCard.suit === '♠︎') &&
+                            (newCardClicked.suit === '♥' || newCardClicked.suit === '♦︎')
+                        )
+                        ||
+                        (
+                            (selectedCard.suit === '♥' || selectedCard.suit === '♦︎') &&
+                            (newCardClicked.suit === '♣' || newCardClicked.suit === '♠︎')
+                        )
+                    )
+                ) {
+                    //removing selected card
+                    newDealtCards[selectedCardColumn].splice(selectedCardRow, 1);
+                    //adding it to new position
+                    newDealtCards[action.columnIndex].push(selectedCard);
+
+                    //once we move the card we want to un-select it as well
+                    selectedCard.selected = false;
+                }
+                else {
+                    selectedCard.selected = false;
+                }
+
+            }
+            else if(newCardClicked.flipped === false) {
+                newCardClicked.flipped = true
+                console.log(newCardClicked.flipped)
+            }
+            else{
+                // user is selecting a card
+                newDealtCards[action.columnIndex][action.rowIndex].selected = true
+                console.log(newDealtCards[action.columnIndex][action.rowIndex])
+            }
 
             return {
                 ...state,
-                dealtCards: selectedCards
+                dealtCards: newDealtCards
             }
         case 'RESET_CARDS':
             return {

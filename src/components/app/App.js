@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Card from '../Card/card'
 import './App.css';
 import { connect } from 'react-redux';
-import {createDeck, getNextCard, dealCards, resetCards, selectCard} from '../../actions/deckActions'
+import {createDeck, getNextCard, dealCards, resetCards, selectCard, selectDeckCard} from '../../actions/deckActions'
 import DealtCards from "../DealtCards/dealtCards";
 import AceArea from "../AceArea/aceArea";
 
@@ -16,8 +16,8 @@ class App extends Component {
 
     createDeck = () => {
         let suits = ['♠︎','♣︎','♥︎','♦︎'];
-        let ranks = ['A','K','Q','J','10','9','8','7','6','5','4','3','2']
-        let deckOfCards = []
+        let ranks = ['A','K','Q','J',10,9,8,7,6,5,4,3,2];
+        let deckOfCards = [];
 
         suits.forEach(suit => {
             ranks.forEach(rank => {
@@ -67,9 +67,8 @@ class App extends Component {
                             <div className="deck-face" onClick={this.props.getNextCard}>
                                 <img src='https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-tally-ho-circle-back-1_grande.png?v=1530155016' />
                             </div>
-                            <div className="shown-card">
-                                <Card onClick={this.props.selectCard}
-                                      card={this.props.cards[this.props.currentCardIndex]}/>
+                            <div className="shown-card" onClick={this.props.selectDeckCard}>
+                                <Card card={this.props.cards[this.props.currentCardIndex]}/>
                             </div>
                         </div>
 
@@ -100,6 +99,7 @@ const mapDispatchToProps = dispatch => {
         createDeck: (cardsDeck) => dispatch(createDeck(cardsDeck)),
         getNextCard: () => dispatch(getNextCard()),
         dealCards: () => dispatch(dealCards()),
+        selectDeckCard: () => dispatch(selectDeckCard()),
         selectCard: () => dispatch(selectCard()),
         resetCards: () => dispatch(resetCards())
     }

@@ -17,6 +17,13 @@ export const dealCards = () => {
     }
 }
 
+export const selectDeckCard = () => {
+    return {
+        type: 'SELECT_DECK_CARD'
+
+    }
+}
+
 export const selectCard = (columnIndex, rowIndex) => {
     return {
         type: 'SELECT_CARD',

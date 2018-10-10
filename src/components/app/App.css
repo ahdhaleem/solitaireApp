@@ -73,7 +73,7 @@ button:hover {
   transform: rotate(180deg)
 }
 
-.backface img {
+.backFace img {
   width: 100%;
   position: absolute;
   margin: -6px;
