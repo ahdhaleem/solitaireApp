@@ -16,12 +16,18 @@ class App extends Component {
 
     createDeck = () => {
         let suits = ['♠︎','♣︎','♥︎','♦︎'];
-        let ranks = ['A','K','Q','J',10,9,8,7,6,5,4,3,2];
+        let ranks = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
         let deckOfCards = [];
 
         suits.forEach(suit => {
-            ranks.forEach(rank => {
-                deckOfCards.push({ rank , suit, selected: false, flipped: false })
+            ranks.forEach((rank, index) => {
+                let color;
+                if(suit === '♦︎' || suit === '♥︎'){
+                    color = 'red'
+                } else {
+                    color = 'black'
+                }
+                deckOfCards.push({ rank , suit, selected: false, flipped: false, rankValue: index+1, color })
             })
         })
 
@@ -67,12 +73,12 @@ class App extends Component {
                             <div className="deck-face" onClick={this.props.getNextCard}>
                                 <img src='https://cdn.shopify.com/s/files/1/0200/7616/products/playing-cards-tally-ho-circle-back-1_grande.png?v=1530155016' />
                             </div>
-                            <div className="shown-card" onClick={this.props.selectDeckCard}>
-                                <Card card={this.props.cards[this.props.currentCardIndex]}/>
+                            <div className="shown-card" >
+                                <Card deckCard={true} card={this.props.cards[this.props.currentCardIndex]} />
                             </div>
                         </div>
 
-                        <AceArea card={this.props.cards} />
+                        <AceArea />
                     </div>
 
                     <div className="bottom-section">
@@ -99,7 +105,6 @@ const mapDispatchToProps = dispatch => {
         createDeck: (cardsDeck) => dispatch(createDeck(cardsDeck)),
         getNextCard: () => dispatch(getNextCard()),
         dealCards: () => dispatch(dealCards()),
-        selectDeckCard: () => dispatch(selectDeckCard()),
         selectCard: () => dispatch(selectCard()),
         resetCards: () => dispatch(resetCards())
     }

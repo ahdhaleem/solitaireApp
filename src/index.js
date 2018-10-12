@@ -10,7 +10,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const store = createStore(reducer, composeEnhancers())
 
 
-function reducer(state={cards: [], currentCardIndex: 0, dealtCards: []}, action) {
+function reducer(state={cards: [], currentCardIndex: 0, dealtCards: [], aceCards: [ [],[],[],[] ]}, action ) {
     switch(action.type) {
         case 'CREATE_DECK':
             return {
@@ -22,8 +22,16 @@ function reducer(state={cards: [], currentCardIndex: 0, dealtCards: []}, action)
             if(newCardIndex > state.cards.length-1) {
                 newCardIndex = 0
             }
+            let newDeckCards = [...state.cards]
+            for(let i = 0; i < newDeckCards.length; i++) {
+                if(newDeckCards[i].selected) {
+                    newDeckCards[i].selected = false
+                }
+            }
+
             return {
                 ...state,
+                cards: newDeckCards,
                 currentCardIndex: newCardIndex
             }
         case 'DEAL_CARDS':
@@ -48,32 +56,41 @@ function reducer(state={cards: [], currentCardIndex: 0, dealtCards: []}, action)
             }
         case 'SELECT_DECK_CARD':
             let deckCards = [...state.cards];
-            let selectedDeckCard;
-
-            for(let i = 0; i < deckCards.length; i++) {
-                if(deckCards[i].selected) {
-                    selectedDeckCard = deckCards[i]
-                    console.log(selectedDeckCard)
-                }
-            }
+            deckCards[state.currentCardIndex].selected = true
+            // let selectedDeckCard;
+            //
+            // for(let i = 0; i < deckCards.length; i++) {
+            //     if(deckCards[i].selected) {
+            //         selectedDeckCard = deckCards[i]
+            //         console.log(selectedDeckCard)
+            //     }
+            // }
 
             return {
                 ...state,
                 cards: deckCards
             };
         case 'SELECT_CARD':
-            let newDealtCards = [...state.dealtCards]
+            let newDealtCards = [...state.dealtCards];
+            let shuffledDeckCard = [...state.cards];
             let selectedCard;
+            let selectedCardFromDeck;
             let selectedCardColumn;
             let selectedCardRow;
 
+            // for(let i=0 ; i < newCards.length; i++){
+            //     //check all cards to see if one is selected
+            //     //if it is then create a variable to say its from the deck
+            // }
 
-            for(let i = 0; i < newDealtCards.length; i++){
-                for(let j = 0; j < newDealtCards[i].length; j++) {
-                    if(newDealtCards[i][j].selected) {
-                        selectedCard = newDealtCards[i][j]
-                        selectedCardColumn = i;
-                        selectedCardRow = j;
+            if(!selectedCardFromDeck) {
+                for (let i = 0; i < newDealtCards.length; i++) {
+                    for (let j = 0; j < newDealtCards[i].length; j++) {
+                        if (newDealtCards[i][j].selected) {
+                            selectedCard = newDealtCards[i][j]
+                            selectedCardColumn = i;
+                            selectedCardRow = j;
+                        }
                     }
                 }
             }
@@ -87,40 +104,33 @@ function reducer(state={cards: [], currentCardIndex: 0, dealtCards: []}, action)
                 //if it cant be moved then you can deselect the card that was selected
 
                 if(
-                    (selectedCard.rank + 1 === newCardClicked.rank ||
-                        selectedCard.rank === 'Q' && newCardClicked.rank === 'K' ||
-                        selectedCard.rank === 'J' && newCardClicked.rank === 'Q' ||
-                        selectedCard.rank === 10 && newCardClicked.rank === 'J'||
-                        selectedCard.rank === 'A' && newCardClicked.rank === 2)
-                    && (
-                        (
-                            (selectedCard.suit === '♣' || selectedCard.suit === '♠︎') &&
-                            (newCardClicked.suit === '♥' || newCardClicked.suit === '♦︎')
-                        )
-                        ||
-                        (
-                            (selectedCard.suit === '♥' || selectedCard.suit === '♦︎') &&
-                            (newCardClicked.suit === '♣' || newCardClicked.suit === '♠︎')
-                        )
-                    )
+                    (selectedCard.rankValue + 1 === newCardClicked.rankValue)
+                    && (selectedCard.color !== newCardClicked.color)
                 ) {
                     //removing selected card
-                    newDealtCards[selectedCardColumn].splice(selectedCardRow, 1);
+                    if(selectedCardFromDeck){
+                        //newDeckCards.splice
+                    }else {
+                        newDealtCards[selectedCardColumn].splice(selectedCardRow, 1);
+                    }
                     //adding it to new position
                     newDealtCards[action.columnIndex].push(selectedCard);
 
                     //once we move the card we want to un-select it as well
                     selectedCard.selected = false;
+                    let cardToFlip = {...newDealtCards[selectedCardColumn][newDealtCards[selectedCardColumn].length - 1]}
+                    cardToFlip.flipped = true
+                    newDealtCards[selectedCardColumn][newDealtCards[selectedCardColumn].length - 1] = cardToFlip
                 }
                 else {
                     selectedCard.selected = false;
                 }
 
             }
-            else if(newCardClicked.flipped === false) {
-                newCardClicked.flipped = true
-                console.log(newCardClicked.flipped)
-            }
+            // else if(newCardClicked.flipped === false) {
+            //     newCardClicked.flipped = true
+            //     console.log(newCardClicked.flipped)
+            // }
             else{
                 // user is selecting a card
                 newDealtCards[action.columnIndex][action.rowIndex].selected = true

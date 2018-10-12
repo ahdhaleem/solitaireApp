@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import {selectCard} from "../../actions/deckActions";
+import {selectCard, selectDeckCard} from "../../actions/deckActions";
 
 class Card extends Component {
+
+    handleClick = () => {
+        if(this.props.isAceCard){
+            //add action
+        }
+        else if(this.props.deckCard){
+            this.props.selectDeckCard()
+        }else {
+            this.props.selectCard(this.props.columnIndex, this.props.rowIndex);
+        }
+    }
 
     render() {
         if(!this.props.card) {
@@ -12,7 +23,7 @@ class Card extends Component {
         let color = (this.props.card.suit ===  '♦︎' || this.props.card.suit ===  '♥︎' ) ? 'red' : 'black';
 
         return (
-            <div onClick={() => this.props.selectCard(this.props.columnIndex, this.props.rowIndex)}
+            <div onClick={this.handleClick}
                  className='card' style={{top: (20 * this.props.rowIndex) + 'px'}}>
 
                 {/*ternery operator that checks if card.flipped = true then print card, else show backface*/}
@@ -48,6 +59,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        selectDeckCard: () => dispatch(selectDeckCard()),
         selectCard: (columnIndex, rowIndex) => {
             dispatch(selectCard(columnIndex, rowIndex))
         }
