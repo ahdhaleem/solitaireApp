@@ -66,7 +66,7 @@ class App extends Component {
         return (
             <div className="app">
                 <div className="board">
-                    <button onClick={this.resetCards}>RESTART</button>
+                    <button onClick={this.resetCards}>RESET</button>
                     <button onClick={this.dealCards}>DEAL</button>
                     <div className="top-section">
                         <div className="left-side">

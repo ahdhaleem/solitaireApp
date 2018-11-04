@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import {selectCard, selectDeckCard} from "../../actions/deckActions";
+import { connect } from 'react-redux';
+import {aceSection, selectCard, selectDeckCard} from "../../actions/deckActions";
 
 class Card extends Component {
+
+    audio = () => {
+        let dealSound = new Audio("https://d1qmdf3vop2l07.cloudfront.net/solitaire.cloudvent.net/compressed/15b798ca2a6449d6450ae201098104b1.ogg");
+        dealSound.play()
+    }
 
     handleClick = () => {
         if(this.props.isAceCard){
             //add action
+            this.props.aceSection(this.props.aceIndex)
         }
         else if(this.props.deckCard){
             this.props.selectDeckCard()
+            this.audio()
         }else {
             this.props.selectCard(this.props.columnIndex, this.props.rowIndex);
+            this.audio()
         }
     }
 
@@ -59,11 +67,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        aceSection: (aceIndex) => dispatch(aceSection(aceIndex)),
         selectDeckCard: () => dispatch(selectDeckCard()),
-        selectCard: (columnIndex, rowIndex) => {
+        selectCard: (columnIndex, rowIndex) =>
             dispatch(selectCard(columnIndex, rowIndex))
-        }
-
     }
 }
 

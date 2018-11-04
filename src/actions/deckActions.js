@@ -32,9 +32,25 @@ export const selectCard = (columnIndex, rowIndex) => {
     }
 }
 
+export const moveKing = (columnIndex) => {
+    return {
+        type: 'MOVE_KING',
+        columnIndex
+    }
+}
+
+export const aceSection = (aceIndex) => {
+    return {
+        type: 'ACE_SECTION',
+        aceIndex
+    }
+}
+
 export const resetCards = () => {
     return {
         type: 'RESET_CARDS'
     }
 }
+
+
 

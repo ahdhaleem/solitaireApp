@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Card from '../Card/card';
 import { connect } from 'react-redux'
+import {moveKing} from "../../actions/deckActions";
+
 
 class DealtCards extends Component {
 
@@ -8,11 +10,17 @@ class DealtCards extends Component {
         return this.props.dealtCards.map((cardsColumn, columnIndex) => {
             return (
                 <div className='card-column'>
-                    {cardsColumn.map((card, rowIndex) => {
-                        return (
-                            <Card card={card} rowIndex={rowIndex} columnIndex={columnIndex} />
-                        )
-                    })}
+                {/*condition that checks if a column is empty then add box onClick , else, map and display cards*/}
+                    {(cardsColumn.length === 0) ?
+                        <div className='empty-column'
+                             onClick={() => this.props.moveKing(columnIndex)}>
+
+                        </div>
+                        :
+                    cardsColumn.map((card, rowIndex) => {
+                        return (<Card card={card} rowIndex={rowIndex} columnIndex={columnIndex}/>)
+                        })
+                    }
                 </div>
             )})
     }
@@ -28,8 +36,16 @@ class DealtCards extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        cards: state.cards,
         dealtCards: state.dealtCards
     }
 }
 
-export default connect(mapStateToProps)(DealtCards)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        moveKing: (columnIndex) =>
+            dispatch(moveKing(columnIndex))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DealtCards)
